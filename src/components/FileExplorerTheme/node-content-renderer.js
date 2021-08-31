@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import './node-content-renderer.scss';
+import './node-content-renderer.css';
 
 function isDescendant(older, younger) {
   return (

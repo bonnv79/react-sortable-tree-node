@@ -1,6 +1,6 @@
 import React, { Component, Children, cloneElement } from 'react';
 import PropTypes from 'prop-types';
-import './tree-node-renderer.scss';
+import './tree-node-renderer.css';
 
 class FileThemeTreeNodeRenderer extends Component {
   render() {
