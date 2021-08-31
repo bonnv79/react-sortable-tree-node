@@ -432,8 +432,7 @@ export function changeNodeAtPath({
       return typeof newNode === 'function'
         ? newNode({ node, treeIndex: currentTreeIndex })
         : newNode;
-    }
-    if (!node.children) {
+    } else if (!node.children) {
       // If this node is part of the path, but has no children, return the unchanged node
       throw new Error('Path referenced children of node with no children.');
     }
@@ -621,15 +620,10 @@ export function addNodeUnderParent({
   addAsFirstChild = false,
 }) {
   if (parentKey === null) {
-    return addAsFirstChild
-      ? {
-          treeData: [newNode, ...(treeData || [])],
-          treeIndex: 0,
-        }
-      : {
-          treeData: [...(treeData || []), newNode],
-          treeIndex: (treeData || []).length,
-        };
+    return {
+      treeData: [...(treeData || []), newNode],
+      treeIndex: (treeData || []).length,
+    };
   }
 
   let insertedTreeIndex = null;

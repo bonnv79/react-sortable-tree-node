@@ -1,11 +1,9 @@
-/* eslint-disable react/no-multi-comp */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import renderer from 'react-test-renderer';
 import { mount } from 'enzyme';
 import { List } from 'react-virtualized';
-import { DndProvider, DndContext } from 'react-dnd';
-import TestBackend from 'react-dnd-test-backend';
+import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import TouchBackend from 'react-dnd-touch-backend';
 import SortableTree, {
@@ -26,90 +24,79 @@ describe('<SortableTree />', () => {
   });
 
   it('should render nodes for flat data', () => {
-    let wrapper;
+    const wrapper = mount(<SortableTree treeData={[]} onChange={() => {}} />);
 
     // No nodes
-    wrapper = mount(<SortableTree treeData={[]} onChange={() => {}} />);
     expect(wrapper.find(TreeNode).length).toEqual(0);
 
     // Single node
-    wrapper = mount(<SortableTree treeData={[{}]} onChange={() => {}} />);
+    wrapper.setProps({
+      treeData: [{}],
+    });
     expect(wrapper.find(TreeNode).length).toEqual(1);
 
     // Two nodes
-    wrapper = mount(<SortableTree treeData={[{}, {}]} onChange={() => {}} />);
+    wrapper.setProps({
+      treeData: [{}, {}],
+    });
     expect(wrapper.find(TreeNode).length).toEqual(2);
   });
 
   it('should render nodes for nested, expanded data', () => {
-    let wrapper;
-
-    // Single Nested
-    wrapper = mount(
+    const wrapper = mount(
       <SortableTree
         treeData={[{ expanded: true, children: [{}] }]}
         onChange={() => {}}
       />
     );
+
+    // Single Nested
     expect(wrapper.find(TreeNode).length).toEqual(2);
 
     // Double Nested
-    wrapper = mount(
-      <SortableTree
-        treeData={[
-          { expanded: true, children: [{ expanded: true, children: [{}] }] },
-        ]}
-        onChange={() => {}}
-      />
-    );
+    wrapper.setProps({
+      treeData: [
+        { expanded: true, children: [{ expanded: true, children: [{}] }] },
+      ],
+    });
     expect(wrapper.find(TreeNode).length).toEqual(3);
 
     // 2x Double Nested Siblings
-    wrapper = mount(
-      <SortableTree
-        treeData={[
-          { expanded: true, children: [{ expanded: true, children: [{}] }] },
-          { expanded: true, children: [{ expanded: true, children: [{}] }] },
-        ]}
-        onChange={() => {}}
-      />
-    );
+    wrapper.setProps({
+      treeData: [
+        { expanded: true, children: [{ expanded: true, children: [{}] }] },
+        { expanded: true, children: [{ expanded: true, children: [{}] }] },
+      ],
+    });
     expect(wrapper.find(TreeNode).length).toEqual(6);
   });
 
   it('should render nodes for nested, collapsed data', () => {
-    let wrapper;
-
-    // Single Nested
-    wrapper = mount(
+    const wrapper = mount(
       <SortableTree
         treeData={[{ expanded: false, children: [{}] }]}
         onChange={() => {}}
       />
     );
+
+    // Single Nested
     expect(wrapper.find(TreeNode).length).toEqual(1);
 
     // Double Nested
-    wrapper = mount(
-      <SortableTree
-        treeData={[
-          { expanded: false, children: [{ expanded: false, children: [{}] }] },
-        ]}
-        onChange={() => {}}
-      />
-    );
+    wrapper.setProps({
+      treeData: [
+        { expanded: false, children: [{ expanded: false, children: [{}] }] },
+      ],
+    });
     expect(wrapper.find(TreeNode).length).toEqual(1);
 
     // 2x Double Nested Siblings, top level of first expanded
-    wrapper = mount(
-      <SortableTree
-        treeData={[
-          { expanded: true, children: [{ expanded: false, children: [{}] }] },
-          { expanded: false, children: [{ expanded: false, children: [{}] }] },
-        ]}
-        onChange={() => {}}
-      />
-    );
+    wrapper.setProps({
+      treeData: [
+        { expanded: true, children: [{ expanded: false, children: [{}] }] },
+        { expanded: false, children: [{ expanded: false, children: [{}] }] },
+      ],
+    });
     expect(wrapper.find(TreeNode).length).toEqual(3);
   });
 
@@ -309,7 +296,7 @@ describe('<SortableTree />', () => {
       />
     );
 
-    const tree = wrapper.find('ReactSortableTree').instance();
+    const tree = wrapper.find(SortableTreeWithoutDndContext).instance();
     expect(tree.state.searchMatches).toEqual([
       { node: { title: 'b' }, path: [0, 1], treeIndex: 1 },
       { node: { title: 'be' }, path: [2, 3], treeIndex: 3 },
@@ -403,54 +390,46 @@ describe('<SortableTree />', () => {
   });
 
   it('loads using SortableTreeWithoutDndContext', () => {
+    const HTML5Wrapped = DragDropContext(HTML5Backend)(
+      SortableTreeWithoutDndContext
+    );
+    const TouchWrapped = DragDropContext(TouchBackend)(
+      SortableTreeWithoutDndContext
+    );
+
     expect(
-      mount(
-        <DndProvider backend={HTML5Backend}>
-          <SortableTreeWithoutDndContext
-            treeData={[{ title: 'a' }]}
-            onChange={() => {}}
-          />
-        </DndProvider>
-      )
+      mount(<HTML5Wrapped treeData={[{ title: 'a' }]} onChange={() => {}} />)
     ).toBeDefined();
     expect(
-      mount(
-        <DndProvider backend={TouchBackend}>
-          <SortableTreeWithoutDndContext
-            treeData={[{ title: 'a' }]}
-            onChange={() => {}}
-          />
-        </DndProvider>
-      )
+      mount(<TouchWrapped treeData={[{ title: 'a' }]} onChange={() => {}} />)
     ).toBeDefined();
   });
 
   it('loads using SortableTreeWithoutDndContext', () => {
+    const TestWrapped = DragDropContext(HTML5Backend)(
+      SortableTreeWithoutDndContext
+    );
+
     const onDragStateChanged = jest.fn();
     const treeData = [{ title: 'a' }, { title: 'b' }];
-    let manager = null;
-
     const wrapper = mount(
-      <DndProvider backend={TestBackend}>
-        <DndContext.Consumer>
-          {({ dragDropManager }) => {
-            manager = dragDropManager;
-          }}
-        </DndContext.Consumer>
-        <SortableTreeWithoutDndContext
-          treeData={treeData}
-          onDragStateChanged={onDragStateChanged}
-          onChange={() => {}}
-        />
-      </DndProvider>
+      <TestWrapped
+        treeData={treeData}
+        onDragStateChanged={onDragStateChanged}
+        onChange={() => {}}
+      />
     );
 
     // Obtain a reference to the backend
-    const backend = manager.getBackend();
+    const backend = wrapper
+      .instance()
+      .getManager()
+      .getBackend();
 
     // Retrieve our DnD-wrapped node component type
-    const wrappedNodeType = wrapper.find('ReactSortableTree').instance()
-      .nodeContentRenderer;
+    const wrappedNodeType = wrapper
+      .find(SortableTreeWithoutDndContext)
+      .instance().nodeContentRenderer;
 
     // And get the first such component
     const nodeInstance = wrapper

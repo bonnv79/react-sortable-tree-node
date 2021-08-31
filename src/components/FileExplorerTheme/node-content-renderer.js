@@ -1,8 +1,9 @@
 /* eslint-disable no-unused-vars */
+
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import styles from './node-content-renderer.module.css';
 import clsx from 'clsx';
-import './node-content-renderer.css';
 
 function isDescendant(older, younger) {
   return (
@@ -76,7 +77,7 @@ class FileThemeNodeContentRenderer extends Component {
         <div
           key={`pre_${1 + i}`}
           style={{ width: scaffoldBlockPxWidth }}
-          className="lineBlock"
+          className={styles.lineBlock}
         />
       );
 
@@ -88,13 +89,13 @@ class FileThemeNodeContentRenderer extends Component {
         if (listIndex === swapFrom + swapLength - 1) {
           // This block is on the bottom (target) line
           // This block points at the target block (where the row will go when released)
-          highlightLineClass = 'highlightBottomLeftCorner';
+          highlightLineClass = styles.highlightBottomLeftCorner;
         } else if (treeIndex === swapFrom) {
           // This block is on the top (source) line
-          highlightLineClass = 'highlightTopLeftCorner';
+          highlightLineClass = styles.highlightTopLeftCorner;
         } else {
           // This block is between the bottom and top
-          highlightLineClass = 'highlightLineVertical';
+          highlightLineClass = styles.highlightLineVertical;
         }
 
         scaffold.push(
@@ -104,7 +105,7 @@ class FileThemeNodeContentRenderer extends Component {
               width: scaffoldBlockPxWidth,
               left: scaffoldBlockPxWidth * i,
             }}
-            className={`absoluteLineBlock ${highlightLineClass}`}
+            className={`${styles.absoluteLineBlock} ${highlightLineClass}`}
           />
         );
       }
@@ -113,16 +114,15 @@ class FileThemeNodeContentRenderer extends Component {
     const nodeContent = (
       <div
         style={{ height: '100%' }}
-        className={`react-tree-node-content ${otherProps.className}`}
         {...otherProps}
       >
         <div
           className={clsx(
-            'rowWrapper',
+            styles.rowWrapper,
             {
-              rowWrapperDragDisabled: !canDrag,
-              rowSelected: selected && !isLandingPadActive,
-              rowWrapperLandingPadActive: isLandingPadActive,
+              [styles.rowWrapperDragDisabled]: !canDrag,
+              [styles.rowSelected]: selected && !isLandingPadActive,
+              [styles.rowWrapperLandingPadActive]: isLandingPadActive,
             }
           )}
           onClick={onClickrowContents}
@@ -133,12 +133,12 @@ class FileThemeNodeContentRenderer extends Component {
               {scaffold}
               <div
                 className={clsx(
-                  'row',
+                  styles.row,
                   {
-                    rowLandingPad: isLandingPadActive,
-                    rowCancelPad: isLandingPadActive && !canDrop,
-                    rowSearchMatch: isSearchMatch,
-                    rowSearchFocus: isSearchFocus,
+                    [styles.rowLandingPad]: isLandingPadActive,
+                    [styles.rowCancelPad]: isLandingPadActive && !canDrop,
+                    [styles.rowSearchMatch]: isSearchMatch,
+                    [styles.rowSearchFocus]: isSearchFocus,
                     [className]: className
                   }
                 )}
@@ -151,15 +151,15 @@ class FileThemeNodeContentRenderer extends Component {
                   hasChildren && (
                     <div
                       className={clsx(
-                        'toolbarButton',
-                        'arrowContainer'
+                        styles.toolbarButton,
+                        styles.arrowContainer
                       )}
                       onClick={toggleExpanded}
                     >
                       <span
                         className={clsx(
-                          'arrow',
-                          node.expanded ? 'down' : 'right'
+                          styles.arrow,
+                          node.expanded ? styles.down : styles.right
                         )}
                       />
                     </div>
@@ -167,33 +167,33 @@ class FileThemeNodeContentRenderer extends Component {
                 }
                 <div
                   className={clsx(
-                    'rowContents',
+                    styles.rowContents,
                     {
-                      rowContentsDragDisabled: !canDrag
+                      [styles.rowContentsDragDisabled]: !canDrag
                     }
                   )}
                 >
-                  <div className="rowToolbar">
+                  <div className={styles.rowToolbar}>
                     {icons.map((icon, index) => (
                       <div
                         key={index} // eslint-disable-line react/no-array-index-key
-                        className="toolbarButton"
+                        className={styles.toolbarButton}
                       >
                         {icon}
                       </div>
                     ))}
                   </div>
-                  <div className="rowLabel">
-                    <span className="rowTitle">
+                  <div className={styles.rowLabel}>
+                    <span className={styles.rowTitle}>
                       {nodeTitle}
                     </span>
                   </div>
 
-                  <div className="rowToolbar">
+                  <div className={styles.rowToolbar}>
                     {buttons.map((btn, index) => (
                       <div
                         key={index} // eslint-disable-line react/no-array-index-key
-                        className="toolbarButton"
+                        className={styles.toolbarButton}
                       >
                         {btn}
                       </div>

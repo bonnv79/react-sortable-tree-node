@@ -1145,20 +1145,6 @@ describe('addNodeUnderParent', () => {
     expect(expectedNewNode).toEqual(nestedParams.newNode);
     expect(previousChildren).toEqual(nestedParams.treeData[0].children);
   });
-
-  it('should add new node as first child under root if addAsFirstChild is true', () => {
-    const result = addNodeUnderParent({
-      ...nestedParams,
-      parentKey: null,
-      getNodeKey: keyFromKey,
-      addAsFirstChild: true,
-    });
-
-    const [expectedNewNode, ...previousTreeData] = result.treeData;
-
-    expect(expectedNewNode).toEqual(nestedParams.newNode);
-    expect(previousTreeData).toEqual(nestedParams.treeData);
-  });
 });
 
 describe('insertNode', () => {
@@ -1616,8 +1602,7 @@ describe('walk', () => {
           if (node.key === 2) {
             // Cut walk short with false
             return false;
-          }
-          if (node.key === 3) {
+          } else if (node.key === 3) {
             throw new Error('walk not terminated by false');
           }
 
