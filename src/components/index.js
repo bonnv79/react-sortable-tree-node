@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import SortableTree, { toggleExpandedForAll } from 'react-sortable-tree';
+import SortableTree, { toggleExpandedForAll } from './SortableTree';
 import FileExplorerTheme from './FileExplorerTheme/index';
 
 /**
